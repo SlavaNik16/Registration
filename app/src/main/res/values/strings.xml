@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Registration</string>
+
+    <string name="RegistName">Регистрация с Firebase</string>
+    <string name="NameAfter">Регистрация App</string>
+    <string name="TextBottom">Ввойдите в свою учетную запись</string>
+    <string name="butSignIn">Войти</string>
+    <string name="butSignOut">Зарегистрироваться</string>
+</resources>
