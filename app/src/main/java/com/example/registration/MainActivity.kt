@@ -17,9 +17,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : AppCompatActivity() {
-//    private lateinit var auth:FirebaseAuth
-//    private lateinit var users:DatabaseReference
 
+    private var validate: Boolean = false
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     private fun showRegisterWindow() {
         var dialog:AlertDialog.Builder = AlertDialog.Builder(this)
         dialog.setTitle("Зарегистрироваться")
-        dialog.setMessage("Введите все данные для регистрации")
+        dialog.setMessage("Введите все данные для регистраци!")
         var inflater:LayoutInflater = LayoutInflater.from(this)
         var register_window:View = inflater.inflate(R.layout.register_window, null)
         dialog.setView(register_window)
@@ -49,21 +48,24 @@ class MainActivity : AppCompatActivity() {
         var name: TextInputEditText = register_window.findViewById(R.id.nameField)
         var phone: TextInputEditText = register_window.findViewById(R.id.phoneField)
 
-        dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterface, i -> dialogInterface.dismiss() })
+        dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterface, i ->
+            dialogInterface.dismiss()
+            Snackbar.make(binding.rootElement, "Регистрация отменена!",Snackbar.LENGTH_SHORT).show()
+        })
         dialog.setPositiveButton("Добавить",DialogInterface.OnClickListener { dialogInterface, i ->
+            if (TextUtils.isEmpty(name.text.toString())){
+                Snackbar.make(binding.rootElement, "Введите Имя",Snackbar.LENGTH_SHORT).show()
+                return@OnClickListener
+            }
+            if (TextUtils.isEmpty(phone.text.toString())){
+                Snackbar.make(binding.rootElement, "Введите Телефон",Snackbar.LENGTH_SHORT).show()
+                return@OnClickListener
+            }
             if (TextUtils.isEmpty(email.text.toString())){
                 Snackbar.make(binding.rootElement, "Введите вашу почту",Snackbar.LENGTH_SHORT).show()
                 return@OnClickListener
             }
-            if (TextUtils.isEmpty(name.text.toString())){
-                Snackbar.make(binding.rootElement, "Введите ваше имя",Snackbar.LENGTH_SHORT).show()
-                return@OnClickListener
-            }
-            if (TextUtils.isEmpty(phone.text.toString())){
-                Snackbar.make(binding.rootElement, "Введите ваш телефон",Snackbar.LENGTH_SHORT).show()
-                return@OnClickListener
-            }
-            if (password.text.toString().length < 5){
+            if (password.text.toString().length < 6){
                 Snackbar.make(binding.rootElement, "Введите пароль, который более 5 символов",Snackbar.LENGTH_SHORT).show()
                 return@OnClickListener
             }
@@ -72,10 +74,10 @@ class MainActivity : AppCompatActivity() {
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email.text.toString(), password.text.toString())
                 .addOnSuccessListener {
                     var user: User = User()
-                    user.setEmail(email.text.toString())
                     user.setName(name.text.toString())
-                    user.setPassword(password.text.toString())
                     user.setPhone(phone.text.toString())
+                    user.setEmail(email.text.toString())
+                    user.setPassword(password.text.toString())
 
                     FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(user).addOnSuccessListener {
                         Snackbar.make(binding.rootElement, "Пользователь добавлен!",Snackbar.LENGTH_SHORT).show()

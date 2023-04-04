@@ -11,28 +11,60 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="20dp">
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_height="wrap_content"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutEmail"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:id="@+id/emailField"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:text=""
-            android:textSize="30sp"
-            />
+            android:layout_height="wrap_content"
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_height="wrap_content"
+            app:helperText="Required*"
+            app:helperTextTextColor="@color/red"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:prefixText="+7"
+            app:startIconDrawable="@drawable/ic_email">
+
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:id="@+id/emailField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:text="" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutPassword"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:id="@+id/passField"
-            android:hint="Пароль"
-            android:inputType="textPassword"
-            android:text=""
-            android:textSize="30sp"
-            />
+            android:layout_height="wrap_content"
+            app:counterEnabled="true"
+            app:counterMaxLength="15"
+
+            app:helperText="Required*"
+            app:helperTextTextColor="@color/red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:startIconDrawable="@drawable/ic_lock">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/passField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Пароль"
+                android:inputType="textPassword"
+                android:maxLength="15"
+                android:text="" />
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
