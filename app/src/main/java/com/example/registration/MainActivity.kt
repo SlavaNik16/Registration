@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.RelativeLayout
 import androidx.appcompat.app.AlertDialog
 import com.example.registration.Models.User
 import com.example.registration.databinding.ActivityMainBinding
@@ -19,20 +17,25 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var auth:FirebaseAuth
-    private lateinit var dataBase:FirebaseDatabase
-    private lateinit var users:DatabaseReference
+//    private lateinit var auth:FirebaseAuth
+//    private lateinit var users:DatabaseReference
 
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         binding.butRegister.setOnClickListener{
             showRegisterWindow()
         }
+        binding.butSignIn.setOnClickListener{
+            showSignInWindow()
+        }
+
+
     }
+
+
     private fun showRegisterWindow() {
         var dialog:AlertDialog.Builder = AlertDialog.Builder(this)
         dialog.setTitle("Зарегистрироваться")
@@ -74,12 +77,52 @@ class MainActivity : AppCompatActivity() {
                     user.setPassword(password.text.toString())
                     user.setPhone(phone.text.toString())
 
-                    FirebaseDatabase.getInstance().getReference("Users").child(user.getEmail()).setValue(user).addOnSuccessListener {
+                    FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(user).addOnSuccessListener {
                         Snackbar.make(binding.rootElement, "Пользователь добавлен!",Snackbar.LENGTH_SHORT).show()
                     } //Добавленрие пользователя в таблицу
+                }.addOnFailureListener{
+                    Snackbar.make(binding.rootElement, "Ошибка регистрации!.", Snackbar.LENGTH_SHORT).show()
                 }
         })
 
         dialog.show()
     }
+
+    private fun showSignInWindow() {
+        var dialog:AlertDialog.Builder = AlertDialog.Builder(this)
+        dialog.setTitle("Войти")
+        dialog.setMessage("Введите даные для входа")
+        var inflater:LayoutInflater = LayoutInflater.from(this)
+        var sign_in_window:View = inflater.inflate(R.layout.sign_in_window, null)
+        dialog.setView(sign_in_window)
+
+        var email: TextInputEditText = sign_in_window.findViewById(R.id.emailField)
+        var password: TextInputEditText = sign_in_window.findViewById(R.id.passField)
+
+        dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterface, i -> dialogInterface.dismiss() })
+        dialog.setPositiveButton("Войти",DialogInterface.OnClickListener { dialogInterface, i ->
+            if (TextUtils.isEmpty(email.text.toString())){
+                Snackbar.make(binding.rootElement, "Введите вашу почту",Snackbar.LENGTH_SHORT).show()
+                return@OnClickListener
+            }
+            if (password.text.toString().length < 5){
+                Snackbar.make(binding.rootElement, "Введите пароль, который более 5 символов",Snackbar.LENGTH_SHORT).show()
+                return@OnClickListener
+            }
+
+            FirebaseAuth.getInstance().signInWithEmailAndPassword(email.text.toString(), password.text.toString())
+                .addOnSuccessListener {
+                    startActivity(Intent(this, MapActivity::class.java))
+                    finish()
+                }
+                .addOnFailureListener{
+                    Snackbar.make(binding.rootElement, "Ошибка авторизации.", Snackbar.LENGTH_SHORT).show()
+                }
+
+
+        })
+
+        dialog.show()
+    }
+
 }
