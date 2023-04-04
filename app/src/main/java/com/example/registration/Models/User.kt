@@ -4,9 +4,10 @@ import android.provider.ContactsContract.CommonDataKinds.Email
 
 public class User {
     private lateinit var Name: String
+    private lateinit var Phone: String
     private lateinit var Email: String
     private lateinit var Password: String
-    private lateinit var Phone: String
+
 
     constructor(){
 
@@ -14,9 +15,10 @@ public class User {
 
     constructor(name:String, email:String, pass:String, phone: String){
         this.Name = name
+        this.Phone = phone
         this.Email = email
         this.Password = pass
-        this.Phone = phone
+
     }
 
     fun getName(): String = Name

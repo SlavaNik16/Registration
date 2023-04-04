@@ -12,13 +12,14 @@ import com.example.registration.Models.User
 import com.example.registration.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : AppCompatActivity() {
 
-    private var validate: Boolean = false
+
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +31,6 @@ class MainActivity : AppCompatActivity() {
         binding.butSignIn.setOnClickListener{
             showSignInWindow()
         }
-
 
     }
 
@@ -47,6 +47,11 @@ class MainActivity : AppCompatActivity() {
         var password: TextInputEditText = register_window.findViewById(R.id.passField)
         var name: TextInputEditText = register_window.findViewById(R.id.nameField)
         var phone: TextInputEditText = register_window.findViewById(R.id.phoneField)
+
+        var phone_validate: TextInputLayout = register_window.findViewById(R.id.textInputLayoutPhone)
+        phone_validate.setEndIconOnClickListener{
+            Snackbar.make(binding.rootElement, "Номер проверен!",Snackbar.LENGTH_SHORT).show()
+        }
 
         dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterface, i ->
             dialogInterface.dismiss()
@@ -83,7 +88,7 @@ class MainActivity : AppCompatActivity() {
                         Snackbar.make(binding.rootElement, "Пользователь добавлен!",Snackbar.LENGTH_SHORT).show()
                     } //Добавленрие пользователя в таблицу
                 }.addOnFailureListener{
-                    Snackbar.make(binding.rootElement, "Ошибка регистрации!.", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(binding.rootElement, "Ошибка регистрации!", Snackbar.LENGTH_SHORT).show()
                 }
         })
 
@@ -101,7 +106,10 @@ class MainActivity : AppCompatActivity() {
         var email: TextInputEditText = sign_in_window.findViewById(R.id.emailField)
         var password: TextInputEditText = sign_in_window.findViewById(R.id.passField)
 
-        dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterface, i -> dialogInterface.dismiss() })
+        dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterface, i ->
+            dialogInterface.dismiss()
+            Snackbar.make(binding.rootElement, "Вход отменен!",Snackbar.LENGTH_SHORT).show()
+        })
         dialog.setPositiveButton("Войти",DialogInterface.OnClickListener { dialogInterface, i ->
             if (TextUtils.isEmpty(email.text.toString())){
                 Snackbar.make(binding.rootElement, "Введите вашу почту",Snackbar.LENGTH_SHORT).show()
@@ -118,7 +126,7 @@ class MainActivity : AppCompatActivity() {
                     finish()
                 }
                 .addOnFailureListener{
-                    Snackbar.make(binding.rootElement, "Ошибка авторизации.", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(binding.rootElement, "Ошибка входа!", Snackbar.LENGTH_SHORT).show()
                 }
 
 
