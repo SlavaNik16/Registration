@@ -131,10 +131,12 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="150dp"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/constraintLayout"
-        app:layout_constraintTop_toBottomOf="@+id/categoryRecycle" />
+        app:layout_constraintTop_toBottomOf="@+id/categoryRecycle"
+        tools:listitem="@layout/courses_item" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

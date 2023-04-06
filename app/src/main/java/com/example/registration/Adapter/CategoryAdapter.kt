@@ -14,9 +14,9 @@ import com.example.registration.R
 class CategoryAdapter() : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
 
     lateinit var context:Context
-    lateinit var categories:List<Category>
+    lateinit var categories:MutableList<Category>
 
-    constructor(context: Context, category: List<Category>) : this() {
+    constructor(context: Context, category: MutableList<Category>) : this() {
         this.context = context
         this.categories = category
     }
