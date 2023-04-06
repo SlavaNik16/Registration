@@ -16,4 +16,10 @@
     <color name="ripple_background_butOut">#e27a5d</color>
     <color name="StrokeRiddle_butOut">#d16e53</color>
 
+    ---------------------------------------------
+    <color name="mainMapBackground">#f6f6f6</color>
+    <color name="asideMapBackground">#eaeaea</color>
+
+    <color name="nameOfApp">#EC6D6D</color>
+
 </resources>

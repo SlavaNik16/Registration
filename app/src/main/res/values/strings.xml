@@ -6,4 +6,13 @@
     <string name="TextBottom">Ввойдите в свою учетную запись</string>
     <string name="butSignIn">Войти</string>
     <string name="butSignOut">Зарегистрироваться</string>
+
+    ----------------------------------------------------------
+    <string name="Sales">Продажи</string>
+    <string name="txtContacts">Контакты</string>
+    <string name="txtMain">Главная</string>
+    <string name="txtAbout">О нас</string>
+
+    <string name="txtCoursec">Courses</string>
+    <string name="txtApp">App</string>
 </resources>

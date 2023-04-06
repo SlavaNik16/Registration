@@ -1,37 +1,81 @@
 package com.example.registration
 
-import android.content.DialogInterface
-import android.content.Intent
+import android.app.Activity
+import android.app.PendingIntent
+import android.content.*
+import android.content.ContentValues.TAG
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.telephony.SmsManager
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.registration.Models.User
 import com.example.registration.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.*
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
-
     private lateinit var binding: ActivityMainBinding
+    private lateinit var intent: Intent
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        intent = Intent(this, MapActivity::class.java)
         binding.butRegister.setOnClickListener{
+
             showRegisterWindow()
+
         }
         binding.butSignIn.setOnClickListener{
             showSignInWindow()
         }
 
+    }
+    var callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+            Log.d(TAG, "onVerificationCompleted:$credential !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            FirebaseAuth.getInstance().signInWithCredential(credential)
+        }
+
+        override fun onVerificationFailed(e: FirebaseException) {
+            Log.w(TAG, "onVerificationFailed !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", e)
+
+            if (e is FirebaseAuthInvalidCredentialsException) {
+                // Invalid request
+            } else if (e is FirebaseTooManyRequestsException) {
+                // The SMS quota for the project has been exceeded
+            } else if (e is FirebaseAuthMissingActivityForRecaptchaException) {
+                // reCAPTCHA verification attempted with null Activity
+            }
+        }
+
+        override fun onCodeSent(
+            verificationId: String,
+            token: PhoneAuthProvider.ForceResendingToken
+        ) {
+            Log.d(TAG, "onCodeSent:$verificationId !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+            var storedVerificationId = verificationId
+            var resendToken = token
+
+            startActivity(intent)
+            finish()
+        }
     }
 
 
@@ -51,6 +95,14 @@ class MainActivity : AppCompatActivity() {
         var phone_validate: TextInputLayout = register_window.findViewById(R.id.textInputLayoutPhone)
         phone_validate.setEndIconOnClickListener{
             Snackbar.make(binding.rootElement, "Номер проверен!",Snackbar.LENGTH_SHORT).show()
+            var phones:String = "+7${phone.text}"
+            val options = PhoneAuthOptions.newBuilder(FirebaseAuth.getInstance())
+                .setPhoneNumber(phones)       // Phone number to verify
+                .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                .setActivity(this)                 // Activity (for callback binding)
+                .setCallbacks(callbacks)          // OnVerificationStateChangedCallbacks
+                .build()
+            PhoneAuthProvider.verifyPhoneNumber(options)
         }
 
         dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterface, i ->
@@ -95,12 +147,14 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+
+
     private fun showSignInWindow() {
-        var dialog:AlertDialog.Builder = AlertDialog.Builder(this)
+        var dialog: AlertDialog.Builder = AlertDialog.Builder(this)
         dialog.setTitle("Войти")
         dialog.setMessage("Введите даные для входа")
-        var inflater:LayoutInflater = LayoutInflater.from(this)
-        var sign_in_window:View = inflater.inflate(R.layout.sign_in_window, null)
+        var inflater: LayoutInflater = LayoutInflater.from(this)
+        var sign_in_window: View = inflater.inflate(R.layout.sign_in_window, null)
         dialog.setView(sign_in_window)
 
         var email: TextInputEditText = sign_in_window.findViewById(R.id.emailField)
@@ -108,31 +162,42 @@ class MainActivity : AppCompatActivity() {
 
         dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterface, i ->
             dialogInterface.dismiss()
-            Snackbar.make(binding.rootElement, "Вход отменен!",Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(binding.rootElement, "Вход отменен!", Snackbar.LENGTH_SHORT).show()
+
         })
-        dialog.setPositiveButton("Войти",DialogInterface.OnClickListener { dialogInterface, i ->
-            if (TextUtils.isEmpty(email.text.toString())){
-                Snackbar.make(binding.rootElement, "Введите вашу почту",Snackbar.LENGTH_SHORT).show()
+        dialog.setPositiveButton("Войти", DialogInterface.OnClickListener { dialogInterface, i ->
+            if (TextUtils.isEmpty(email.text.toString())) {
+                Snackbar.make(binding.rootElement, "Введите вашу почту", Snackbar.LENGTH_SHORT)
+                    .show()
                 return@OnClickListener
             }
-            if (password.text.toString().length < 5){
-                Snackbar.make(binding.rootElement, "Введите пароль, который более 5 символов",Snackbar.LENGTH_SHORT).show()
+            if (password.text.toString().length < 5) {
+                Snackbar.make(
+                    binding.rootElement,
+                    "Введите пароль, который более 5 символов",
+                    Snackbar.LENGTH_SHORT
+                ).show()
                 return@OnClickListener
             }
 
-            FirebaseAuth.getInstance().signInWithEmailAndPassword(email.text.toString(), password.text.toString())
+            FirebaseAuth.getInstance()
+                .signInWithEmailAndPassword(email.text.toString(), password.text.toString())
                 .addOnSuccessListener {
-                    startActivity(Intent(this, MapActivity::class.java))
+                    startActivity(intent)
                     finish()
                 }
-                .addOnFailureListener{
+                .addOnFailureListener {
                     Snackbar.make(binding.rootElement, "Ошибка входа!", Snackbar.LENGTH_SHORT).show()
                 }
-
-
         })
-
         dialog.show()
     }
 
 }
+
+
+
+
+
+
+
