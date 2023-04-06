@@ -1,8 +1,8 @@
 package com.example.registration.Models
 
 class Category {
-    var id: Int = 0
-    var title: String = ""
+    private var id: Int = 0
+    private var title: String = ""
 
     constructor(id: Int, title: String) {
         this.id = id
